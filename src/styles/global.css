@@ -1,1 +1,11 @@
 @import "tailwindcss";
+@theme {
+  --color-kk-pink: #CF2C67;
+  --color-kk-black: #0D1915;
+}
+
+/* Enable dark mode via `.dark` class in Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Let native UI respect theme */
+:root { color-scheme: light dark; }
