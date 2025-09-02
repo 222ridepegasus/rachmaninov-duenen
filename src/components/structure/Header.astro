@@ -1,0 +1,70 @@
+---
+const nav = [
+  { href: "/", label: "Portfolio" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+// Grab current path from Astro
+const currentPath = Astro.url.pathname;
+---
+
+<header class="w-full bg-white dark:bg-kk-black">
+  <div class="mx-auto max-w-[1920px] px-12 ">
+    <div class="flex py-5 items-center justify-between">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 font-bold tracking-wide">
+        <img src="/kk.svg" alt="" width="154" height="40" />
+        <span class="sr-only">Kieran Kelly — Home</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <div class="flex items-center gap-8 pt-2">
+            <nav class="hidden md:flex items-center gap-8 text-sm text-black dark:text-white">
+              {
+                nav.map((item) => {
+                  const isActive = currentPath === item.href;
+                  const activeClass = isActive ? "text-kk-pink" : "";
+                  return (
+                    <a
+                      href={item.href}
+                      class={`text-lg font-bold ${activeClass}`}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })
+              }
+            </nav>
+            <!-- Theme toggle -->
+            <button
+            type="button"
+            id="theme-toggle"
+            class="inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/40"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+            >
+            <!-- Sun in dark mode -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="4" stroke-width="1.5" />
+                <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-width="1.5" />
+            </svg>
+            <!-- Moon in light mode -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+            </svg>
+            </button>
+        </div>
+  </div>
+
+  <script is:inline>
+    // Theme toggle
+    const btn = document.getElementById("theme-toggle");
+    btn?.addEventListener("click", () => {
+      const root = document.documentElement;
+      const willBeDark = !root.classList.contains("dark");
+      root.classList.toggle("dark", willBeDark);
+      try { localStorage.setItem("theme", willBeDark ? "dark" : "light"); } catch {}
+    });
+  </script>
+</header>

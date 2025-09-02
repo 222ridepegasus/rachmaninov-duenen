@@ -1,0 +1,147 @@
+---
+import "../../styles/global.css";
+import Header from "@components/structure/Header.astro";
+import CoverSection from "@components/case-study/CoverSection.astro";
+import IntroMeta from "@components/case-study/IntroMeta.astro";
+import ImageBlock from "@components/case-study/ImageBlock.astro";
+import TextSection from "@components/case-study/TextSection.astro";
+import { getCollection, Content } from "astro:content";
+import { callSafely } from "astro:actions";
+
+export async function getStaticPaths() {
+  const items = await getCollection("portfolio");
+  return items.map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+
+const { title, client, cover, caseCover, caseSubtitle } = post.data;
+
+// Base path helper for public images (frontmatter-driven)
+const base = post.data.assetsBase ?? `/images/portfolio/${post.slug}`;
+const toSrc = (fileOrSrc: string | undefined) =>
+  fileOrSrc?.startsWith?.("/") ? (fileOrSrc as string) : `${base}/${fileOrSrc}`;
+
+// Resolve cover URLs from either explicit URLs or filename helpers
+const coverUrl = post.data.coverFile ? toSrc(post.data.coverFile) : cover;
+const caseCoverUrl = post.data.caseCoverFile ? toSrc(post.data.caseCoverFile) : caseCover;
+
+// Map gallery items if present (legacy fallback)
+const galleryItems = (post.data.gallery ?? []).map((g: any) => ({
+  src: g.src ?? toSrc(g.file),
+  alt: g.alt,
+  caption: g.caption,
+  ratio: g.ratio ?? "aspect-video",
+}));
+
+// New: ordered, modular blocks from frontmatter
+type Block =
+  | { type: "cover"; image?: string; imageFile?: string; title?: string; subtitle?: string; alt?: string }
+  | { type: "intro" }
+  | { type: "image"; images: Array<{ src?: string; file?: string; alt?: string; caption?: string; ratio?: string }> }
+  | { type: "text"; index?: string; heading?: string; body?: string };
+
+const rawBlocks = (post.data.blocks ?? []) as Block[];
+const blocks = rawBlocks.map((b) => {
+  if (b.type === "cover") {
+    return {
+      _component: "cover",
+      image: b.image ?? (b.imageFile ? toSrc(b.imageFile) : undefined),
+      title: b.title,
+      subtitle: b.subtitle,
+      alt: b.alt,
+    };
+  }
+  if (b.type === "intro") {
+    return { _component: "intro" };
+  }
+  if (b.type === "image") {
+    const images = (b.images ?? []).map((it) => ({
+      src: it.src ?? toSrc(it.file),
+      alt: it.alt,
+      caption: it.caption,
+      ratio: it.ratio ?? "aspect-video",
+    }));
+    return { _component: "image", images };
+  }
+  if (b.type === "text") {
+    return { _component: "text", index: b.index, heading: b.heading, body: b.body };
+  }
+  return b as any;
+});
+
+// Apply saved theme or OS preference early (no flash)
+Astro.head += `<script>(function(){try{var ls=localStorage.getItem("theme");var d=matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&d))document.documentElement.classList.add("dark")}catch{}})();</script>`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} — Kieran Kelly</title>
+    <!-- Apply saved theme or OS preference early -->
+    <script is:inline>
+      (function () {
+        try {
+          const ls = localStorage.getItem("theme");
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (ls === "dark" || (!ls && prefersDark)) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch {}
+      })();
+    </script>
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-kk-black dark:text-gray-100 antialiased">
+    <Header />
+
+    <main>
+      {blocks.length ? (
+        <>
+          {blocks.map((b) => (
+            b._component === "cover" ? (
+              <CoverSection
+                image={b.image ?? (caseCoverUrl ?? coverUrl)}
+                title={b.title ?? title}
+                subtitle={b.subtitle ?? caseSubtitle}
+                alt={b.alt ?? ""}
+              />
+            ) : b._component === "intro" ? (
+              <IntroMeta
+                meta={[
+                  client ? { label: "Client", value: client } : null,
+                  post.data.role ? { label: "Role", value: post.data.role } : null,
+                  post.data.timeframe ? { label: "Timeframe", value: post.data.timeframe } : null,
+                ].filter(Boolean)}
+                intro={post.data.intro}
+              />
+            ) : b._component === "image" ? (
+              <ImageBlock images={b.images} />
+            ) : b._component === "text" ? (
+              <TextSection index={b.index} heading={b.heading} body={b.body} />
+            ) : null
+          ))}
+        </>
+      ) : (
+        <>
+          <!-- Fallback if no blocks -->
+          <CoverSection image={caseCoverUrl ?? coverUrl} title={title} subtitle={caseSubtitle} alt="" />
+          <IntroMeta
+            meta={[
+              client ? { label: "Client", value: client } : null,
+              post.data.role ? { label: "Role", value: post.data.role } : null,
+              post.data.timeframe ? { label: "Timeframe", value: post.data.timeframe } : null,
+            ].filter(Boolean)}
+            intro={post.data.intro}
+          />
+          {galleryItems.length ? <ImageBlock images={galleryItems} /> : null}
+        </>
+      )}
+    </main>
+
+  
+
+  </body>
+</html>

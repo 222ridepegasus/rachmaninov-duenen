@@ -1,0 +1,49 @@
+---
+export interface Props {
+  index?: string;
+  heading?: string;
+  body?: string; // markdown
+}
+
+const { index, heading, body = "" } = Astro.props;
+
+// Render markdown safely (no raw HTML), single newlines become <br>
+let bodyHtml = "";
+try {
+  const { default: MarkdownIt } = await import("markdown-it");
+  const md = new MarkdownIt({ html: false, linkify: true, breaks: true });
+  bodyHtml = md.render(body);
+} catch {
+  bodyHtml = `<p>${(body || "")
+    .trim()
+    .split(/\n{2,}/)
+    .map((s) => s.trim())
+    .join("</p><p>")}</p>`;
+}
+---
+<section class="container-site py-16">
+  <div class="grid grid-cols-1 md:[grid-template-columns:1fr_2fr_1fr] gap-8 items-start">
+    <!-- Left rail: index and heading -->
+    <div class="space-y-3 pr-4">
+      {index && (
+        <div class="text-5xl font-bold leading-none">{index}</div>
+      )}
+      {heading && (
+        <>
+          <div class="h-px w-full bg-gray-400 dark:bg-gray-600"></div>
+          <h2 class="text-xl font-semibold">{heading}</h2>
+        </>
+      )}
+    </div>
+
+    <!-- Center column: body copy -->
+    <div class="prose prose-neutral dark:prose-invert max-w-none text-2xl leading-9 [&>p]:mt-6">
+      <div 
+          class="max-w-none text-xl 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
+          set:html={bodyHtml} />
+    </div>
+
+    <!-- Right rail left empty for balance (add notes or callouts later if you like) -->
+    <div></div>
+  </div>
+</section>
