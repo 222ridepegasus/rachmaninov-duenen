@@ -45,7 +45,7 @@ const items: ImageItem[] = images.length
 const isOptimizable = (s: ImgSrc) => typeof s === 'object' && s && 'src' in s;
 ---
 
-<section class="container-site py-8 space-y-12">
+<section class="container-site py-8 space-y-8">
   {items.map((it) => (
     <figure class="space-y-3">
       <div class={it.ratio ? `relative ${it.ratio}` : ''}>
