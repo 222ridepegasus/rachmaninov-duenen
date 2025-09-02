@@ -1,0 +1,81 @@
+---
+import type { ImageMetadata } from 'astro:assets';
+import { Image } from 'astro:assets';
+
+type ImgSrc = string | ImageMetadata;
+
+export interface ImageItem {
+  src: ImgSrc;
+  alt?: string;
+  caption?: string;
+  /** Tailwind aspect class, for example "aspect-[21/9]" or "aspect-video" */
+  ratio?: string;
+}
+
+export interface Props {
+  /** New multi image API */
+  images?: ImageItem[];
+  /** Legacy single image API */
+  src?: ImgSrc;
+  alt?: string;
+  caption?: string;
+  ratio?: string;
+
+  /** Sizes for responsive images when using astro:assets */
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  images = [],
+  src,
+  alt,
+  caption,
+  ratio,
+  sizes = '(min-width: 1024px) 1024px, 100vw',
+  loading = 'lazy',
+} = Astro.props;
+
+// Normalize to a list so we can render one or many
+const items: ImageItem[] = images.length
+  ? images
+  : (src ? [{ src, alt, caption, ratio }] : []);
+
+// Can we use <Image /> (optimized) or do we fall back to <img>?
+const isOptimizable = (s: ImgSrc) => typeof s === 'object' && s && 'src' in s;
+---
+
+<section class="container-site py-8 space-y-12">
+  {items.map((it) => (
+    <figure class="space-y-3">
+      <div class={it.ratio ? `relative ${it.ratio}` : ''}>
+        {isOptimizable(it.src) ? (
+          <Image
+            src={it.src as ImageMetadata}
+            alt={it.alt ?? ''}
+            sizes={sizes}
+            loading={loading}
+            class={it.ratio
+              ? "absolute inset-0 h-full w-full object-cover"
+              : "w-full h-auto object-cover"}
+          />
+        ) : (
+          <img
+            src={it.src as string}
+            alt={it.alt ?? ''}
+            loading={loading}
+            class={it.ratio
+              ? "absolute inset-0 h-full w-full object-cover"
+              : "w-full h-auto object-cover"}
+          />
+        )}
+      </div>
+
+      {it.caption && (
+        <figcaption class="text-sm text-gray-500 dark:text-gray-400">
+          {it.caption}
+        </figcaption>
+      )}
+    </figure>
+  ))}
+</section>

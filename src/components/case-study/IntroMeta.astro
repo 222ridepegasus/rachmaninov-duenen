@@ -1,0 +1,38 @@
+---
+export interface Props {
+  meta?: Array<{ label: string; value: string }>;
+  intro?: string;
+}
+const { meta = [], intro = "" } = Astro.props;
+
+// Render intro markdown to HTML (dynamic import so the page won't crash if the dep is missing)
+let introHtml = "";
+try {
+  const { default: MarkdownIt } = await import("markdown-it");
+  const md = new MarkdownIt({ html: false, linkify: true, breaks: true });
+  introHtml = md.render(intro ?? "");
+} catch {
+  const raw = intro ?? "";
+  introHtml = `<p>${raw.trim().split(/\n{2,}/).map(s => s.trim()).join("</p><p>")}</p>`;
+}
+---
+<section class="container-site py-16">
+  <div class="grid grid-cols-1 md:[grid-template-columns:1fr_2fr_1fr] gap-8">
+    <ul class="xl:pt-2 space-y-2 text-lg 2xl:text-xl font-400">
+      {meta.map((m) => (
+        <li><span class="">{m.label}:</span> {m.value}</li>
+      ))}
+    </ul>
+
+    <div class="prose prose-neutral dark:prose-invert max-w-none text-2xl leading-relaxed [&>p]:mt-6">
+      <div
+        class="max-w-none text-xl 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
+        set:html={introHtml}
+      />
+    </div>
+    
+
+    <!-- third column left empty for balance -->
+    <div />
+  </div>
+</section>

@@ -19,25 +19,23 @@ const currentPath = Astro.url.pathname;
       </a>
 
       <!-- Desktop nav -->
-      <div class="flex items-center gap-8 pt-5">
-            <nav class="hidden md:flex items-center gap-8 text-sm">
-                {nav.map((item) => {
-                    const isActive = currentPath === item.href;
-                    return (
+      <div class="flex items-center gap-8 pt-2">
+            <nav class="hidden md:flex items-center gap-8 text-sm text-black dark:text-white">
+              {
+                nav.map((item) => {
+                  const isActive = currentPath === item.href;
+                  const activeClass = isActive ? "text-kk-pink" : "";
+                  return (
                     <a
-                        href={item.href}
-                        class={`text-lg font-bold transition-colors ${
-                        isActive
-                            ? "text-kk-pink"
-                            : "opacity-100 hover:opacity-100"
-                        }`}
+                      href={item.href}
+                      class={`text-lg font-bold ${activeClass}`}
                     >
-                        {item.label}
+                      {item.label}
                     </a>
-                    );
-                })}
+                  );
+                })
+              }
             </nav>
-
             <!-- Theme toggle -->
             <button
             type="button"
