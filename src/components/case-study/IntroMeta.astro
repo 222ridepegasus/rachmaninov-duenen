@@ -16,17 +16,17 @@ try {
   introHtml = `<p>${raw.trim().split(/\n{2,}/).map(s => s.trim()).join("</p><p>")}</p>`;
 }
 ---
-<section class="container-site py-16">
+<section class="px-4 sm:container-site pt-6 pb-0 sm:py-16">
   <div class="grid grid-cols-1 md:[grid-template-columns:1fr_2fr_1fr] gap-8">
-    <ul class="xl:pt-2 space-y-2 text-lg 2xl:text-xl font-400">
+    <ul class="xl:pt-2 space-y-0 sm:space-y-2 text-md sm:text-lg 2xl:text-xl font-400">
       {meta.map((m) => (
         <li><span class="">{m.label}:</span> {m.value}</li>
       ))}
     </ul>
 
-    <div class="prose prose-neutral dark:prose-invert max-w-none text-2xl leading-relaxed [&>p]:mt-6">
+    <div class="prose prose-neutral dark:prose-invert max-w-none text-xl sm:text-2xl leading-relaxed [&>p]:mt-6">
       <div
-        class="max-w-none text-xl 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
+        class="max-w-none text-lg sm:text-xl 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
         set:html={introHtml}
       />
     </div>

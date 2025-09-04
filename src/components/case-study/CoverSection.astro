@@ -11,7 +11,7 @@ const { image, title, subtitle, alt = "" } = Astro.props;
 
 <section class="full-bleed relative">
   <!-- Fixed-height hero area (desktop spec: 752px) -->
-  <div class="relative h-[460px] md:h-[520px] lg:h-[600px] xl:h-[680px] 2xl:h-[768px]">
+  <div class="relative h-[360px] md:h-[520px] lg:h-[600px] xl:h-[680px] 2xl:h-[768px]">
     <img
       src={image as string}
       alt={alt}
@@ -24,12 +24,12 @@ const { image, title, subtitle, alt = "" } = Astro.props;
 
     <!-- Overlay text near bottom inside the 1920 / px-12 container -->
     <div class="absolute inset-x-0 bottom-0">
-      <div class="container-site pb-12">
-        <h1 class="text-white text-6xl md:text-6xl font-bold leading-tight">
+      <div class="px-4 sm:container-site pb-4 sm:pb-12">
+        <h1 class="text-white text-3xl sm:text-6xl md:text-6xl font-bold leading-8 sm:leading-tight">
           {title}
         </h1>
         {subtitle && (
-          <p class="mt-2 text-white/90 font-semibold text-xl">
+          <p class="mt-1 sm:mt-2 text-white/90 font-semibold text-lgsm:text-xl">
             {subtitle}
           </p>
         )}

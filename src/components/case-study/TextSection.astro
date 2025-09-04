@@ -21,17 +21,17 @@ try {
     .join("</p><p>")}</p>`;
 }
 ---
-<section class="container-site py-16">
+<section class="px-4 sm:container-site pt-8 pb-4 sm:py-16">
   <div class="grid grid-cols-1 md:[grid-template-columns:1fr_2fr_1fr] gap-8 items-start">
     <!-- Left rail: index and heading -->
-    <div class="space-y-3 pr-4">
+    <div class="space-y-3 sm:pr-4">
       {index && (
-        <div class="text-5xl font-bold leading-none">{index}</div>
+        <div class="text-4xl sm:text-5xl font-bold leading-none">{index}</div>
       )}
       {heading && (
         <>
           <div class="h-px w-full bg-gray-400 dark:bg-gray-600"></div>
-          <h2 class="text-xl font-semibold">{heading}</h2>
+          <h2 class="text-lg sm:text-xl font-semibold">{heading}</h2>
         </>
       )}
     </div>
@@ -39,7 +39,7 @@ try {
     <!-- Center column: body copy -->
     <div class="prose prose-neutral dark:prose-invert max-w-none text-2xl leading-9 [&>p]:mt-6">
       <div 
-          class="max-w-none text-xl 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
+          class="max-w-none text-lg 2xl:text-2xl leading-relaxed [&>p:not(:first-child)]:mt-6"
           set:html={bodyHtml} />
     </div>
 

@@ -11,17 +11,17 @@ const currentPath = Astro.url.pathname;
 ---
 
 <header class="w-full bg-white dark:bg-kk-black">
-  <div class="mx-auto max-w-[1920px] px-12 ">
+  <div class="mx-auto max-w-[1920px] pl-4 pr-3 sm:px-12 ">
     <div class="flex py-5 items-center justify-between">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 font-bold tracking-wide">
-        <img src="/kk.svg" alt="" width="154" height="40" />
+        <img src="/kk.svg" alt="" class="w-30 sm:w-38 h-auto" />
         <span class="sr-only">Kieran Kelly — Home</span>
       </a>
 
       <!-- Desktop nav -->
-      <div class="flex items-center gap-8 pt-2">
-            <nav class="hidden md:flex items-center gap-8 text-sm text-black dark:text-white">
+      <div class="flex items-center gap-1 sm:gap-8 pt-1">
+            <nav class=" gap-3 flex sm:items-center sm:gap-8 text-sm text-black dark:text-white">
               {
                 nav.map((item) => {
                   const isActive = currentPath === item.href;
