@@ -1,5 +1,6 @@
 ---
 title: "Starborne: Sovereign Space"
+sortOrder: 30
 client: "Solid Clouds (Reykjavík)"
 assetsBase: /images/portfolio/starborne
 cover: /images/portfolio/starborne/cover_starborne.jpg
