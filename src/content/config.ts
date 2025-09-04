@@ -15,6 +15,8 @@ const portfolio = defineCollection({
     timeframe: z.string().optional(),
     intro: z.string().optional(),
 
+    sortOrder: z.number().optional(),
+
     // Optional helpers used in your slug mapping
     assetsBase: z.string().optional(),
     coverFile: z.string().optional(),
