@@ -1,9 +1,9 @@
 ---
 const nav = [
   { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
+  // { href: "/blog", label: "Blog" },
   // { href: "/Experimental", label: "Experimental" },
-  { href: "/about", label: "About" },
+  // { href: "/about", label: "About" },
 ];
 
 // Grab current path from Astro
@@ -22,7 +22,25 @@ const currentPath = Astro.url.pathname;
     
 
     <!-- Mobile hamburger -->
-    <div class="flex sm:hidden">
+    <div class="flex gap-4 sm:hidden">
+      <button
+      type="button"
+      data-theme-toggle
+      class="inline-flex items-center justify-center rounded-lg px-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/40 text-gray-900 dark:text-gray-100"
+      aria-label="Toggle theme"
+      title="Toggle theme"
+      >
+      <!-- Sun in dark mode -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="4" stroke-width="1.5" />
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-width="1.5" />
+      </svg>
+      <!-- Moon in light mode -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+      </svg>
+      </button>
+
       <button
         type="button"
         id="open-mobile-menu"
@@ -55,8 +73,8 @@ const currentPath = Astro.url.pathname;
       }
       <button
       type="button"
-      id="theme-toggle"
-      class="inline-flex items-center justify-center rounded-lg px-3  text-sm hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/40"
+      data-theme-toggle
+      class="inline-flex items-center justify-center rounded-lg px-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/40 text-gray-900 dark:text-gray-100"
       aria-label="Toggle theme"
       title="Toggle theme"
       >
@@ -84,13 +102,31 @@ const currentPath = Astro.url.pathname;
             <span class="sr-only">Kieran Kelly</span>
             <img src="/kk.svg" alt="" class="w-30 sm:w-36 h-auto" />
           </a>
-          
-          <button type="button" id="close-mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400">
-            <span class="sr-only">Close menu</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-6 h-6">
-              <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+          <div class="flex gap-4">
+            <button
+            type="button"
+            data-theme-toggle
+            class="inline-flex items-center justify-center rounded-lg px-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring focus-visible:ring-indigo-500/40 text-gray-900 dark:text-gray-100"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+            >
+            <!-- Sun in dark mode -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="4" stroke-width="1.5" />
+                <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-width="1.5" />
             </svg>
-          </button>
+            <!-- Moon in light mode -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+            </svg>
+            </button>
+            <button type="button" id="close-mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400">
+              <span class="sr-only">Close menu</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-6 h-6">
+                <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="mt-32 py-6 flex justify-center items-center flex-col gap-5">
@@ -146,6 +182,36 @@ const currentPath = Astro.url.pathname;
         e.preventDefault();
         dialog.close();
         openBtn.setAttribute('aria-expanded', 'false');
+      });
+    })();
+  </script>
+  <script is:inline>
+    // Theme toggle: attach to all buttons with [data-theme-toggle]
+    (function () {
+      // Apply saved theme on load (optional but prevents flicker)
+      try {
+        const saved = localStorage.getItem("theme");
+        const root = document.documentElement;
+        if (saved === "dark") root.classList.add("dark");
+        else if (saved === "light") root.classList.remove("dark");
+      } catch {}
+
+      const root = document.documentElement;
+      const toggles = document.querySelectorAll('[data-theme-toggle]');
+      if (!toggles.length) return;
+
+      function setTheme(dark) {
+        root.classList.toggle('dark', dark);
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
+      }
+
+      function handleClick() {
+        const willBeDark = !root.classList.contains('dark');
+        setTheme(willBeDark);
+      }
+
+      toggles.forEach(btn => {
+        btn.addEventListener('click', handleClick);
       });
     })();
   </script>
