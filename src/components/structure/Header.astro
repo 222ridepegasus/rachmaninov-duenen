@@ -11,7 +11,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 
-<header class="w-full bg-white dark:bg-kk-black">
+<header data-nav class="sticky top-0 z-50 bg-white dark:bg-kk-black transition-transform duration-300 will-change-transform">
   <nav aria-label="Global" class="mx-auto flex max-w-[1920px] items-center justify-between p-5 pl-4 pr-4 sm:px-12">
     <a href="/" class="-m-1.5 p-1.5">
       <span class="sr-only">Kieran Kelly</span>
@@ -213,6 +213,62 @@ const currentPath = Astro.url.pathname;
       toggles.forEach(btn => {
         btn.addEventListener('click', handleClick);
       });
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      const header = document.querySelector('[data-nav]');
+      if (!header) return;
+
+      let lastY = window.scrollY;
+      let downAcc = 0;   // pixels scrolled down since last direction change
+      let upAcc = 0;     // pixels scrolled up since last direction change
+      const showHideThreshold = 16; // how much movement before we toggle
+      const dontHideUntil = 64;     // don’t hide until user has scrolled past this
+
+      let locked = false; // lock while drawer open
+
+      function onScroll() {
+        if (locked) return;
+        const y = window.scrollY;
+        const dy = y - lastY;
+        lastY = y;
+
+        // Always show near the very top
+        if (y <= dontHideUntil) {
+          header.classList.remove('-translate-y-full');
+          downAcc = upAcc = 0;
+          return;
+        }
+
+        if (dy > 0) {          // scrolling down
+          downAcc += dy; upAcc = 0;
+          if (downAcc > showHideThreshold) {
+            header.classList.add('-translate-y-full');
+          }
+        } else if (dy < 0) {   // scrolling up
+          upAcc += -dy; downAcc = 0;
+          if (upAcc > showHideThreshold) {
+            header.classList.remove('-translate-y-full');
+          }
+        }
+      }
+
+      // Passive scroll listener for perf
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Pause auto-hide while the mobile drawer is open
+      const dlg = document.getElementById('mobile-menu');
+      if (dlg) {
+        const mo = new MutationObserver(() => {
+          locked = dlg.hasAttribute('open');
+          // reset the baseline so we don’t immediately hide/show on close
+          if (!locked) lastY = window.scrollY;
+          // ensure header visible when opening
+          if (locked) header.classList.remove('-translate-y-full');
+        });
+        mo.observe(dlg, { attributes: true, attributeFilter: ['open'] });
+      }
     })();
   </script>
 </header>
