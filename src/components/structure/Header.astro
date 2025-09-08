@@ -150,125 +150,172 @@ const currentPath = Astro.url.pathname;
   </dialog>
 
   <!-- Tiny JS to replace the old command= API -->
-  <script is:inline>
-    (function () {
-      const openBtn = document.getElementById('open-mobile-menu');
-      const dialog = document.getElementById('mobile-menu');
-      const closeBtn = document.getElementById('close-mobile-menu');
+<script is:inline>
+  (function () {
+    const openBtn = document.getElementById('open-mobile-menu');
+    const dialog = document.getElementById('mobile-menu');
+    const closeBtn = document.getElementById('close-mobile-menu');
+    if (!openBtn || !dialog || !closeBtn) return;
 
-      if (!openBtn || !dialog || !closeBtn) return;
-
-      openBtn.addEventListener('click', () => {
-        if (dialog.showModal) dialog.showModal();
-        else dialog.setAttribute('open', '');
-        openBtn.setAttribute('aria-expanded', 'true');
-      });
-
-      closeBtn.addEventListener('click', () => {
-        dialog.close();
-        openBtn.setAttribute('aria-expanded', 'false');
-      });
-
-      // Close when clicking outside the panel
-      dialog.addEventListener('click', (e) => {
-        const panel = dialog.querySelector('div.fixed.inset-y-0.right-0');
-        if (panel && !panel.contains(e.target)) {
-          dialog.close();
-          openBtn.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      dialog.addEventListener('cancel', (e) => {
-        e.preventDefault();
-        dialog.close();
-        openBtn.setAttribute('aria-expanded', 'false');
-      });
-    })();
-  </script>
-  <script is:inline>
-    // Theme toggle: attach to all buttons with [data-theme-toggle]
-    (function () {
-      // Apply saved theme on load (optional but prevents flicker)
-      try {
-        const saved = localStorage.getItem("theme");
-        const root = document.documentElement;
-        if (saved === "dark") root.classList.add("dark");
-        else if (saved === "light") root.classList.remove("dark");
-      } catch {}
-
-      const root = document.documentElement;
-      const toggles = document.querySelectorAll('[data-theme-toggle]');
-      if (!toggles.length) return;
-
-      function setTheme(dark) {
-        root.classList.toggle('dark', dark);
-        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
-      }
-
-      function handleClick() {
-        const willBeDark = !root.classList.contains('dark');
-        setTheme(willBeDark);
-      }
-
-      toggles.forEach(btn => {
-        btn.addEventListener('click', handleClick);
-      });
-    })();
-  </script>
-  <script is:inline>
-    (function () {
-      const header = document.querySelector('[data-nav]');
-      if (!header) return;
-
-      let lastY = window.scrollY;
-      let downAcc = 0;   // pixels scrolled down since last direction change
-      let upAcc = 0;     // pixels scrolled up since last direction change
-      const showHideThreshold = 16; // how much movement before we toggle
-      const dontHideUntil = 64;     // don’t hide until user has scrolled past this
-
-      let locked = false; // lock while drawer open
-
-      function onScroll() {
-        if (locked) return;
+    // Freeze/unfreeze page scroll while the drawer is open
+    function lockScroll(lock) {
+      if (lock) {
         const y = window.scrollY;
-        const dy = y - lastY;
-        lastY = y;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${y}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+      } else {
+        const y = parseInt(document.body.style.top || '0', 10) * -1;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        window.scrollTo(0, y || 0);
+      }
+    }
 
-        // Always show near the very top
-        if (y <= dontHideUntil) {
-          header.classList.remove('-translate-y-full');
-          downAcc = upAcc = 0;
-          return;
-        }
+    openBtn.addEventListener('click', () => {
+      if (dialog.showModal) dialog.showModal();
+      else dialog.setAttribute('open', '');
+      openBtn.setAttribute('aria-expanded', 'true');
+      lockScroll(true); // 🔒 freeze page
+    });
 
-        if (dy > 0) {          // scrolling down
-          downAcc += dy; upAcc = 0;
-          if (downAcc > showHideThreshold) {
-            header.classList.add('-translate-y-full');
-          }
-        } else if (dy < 0) {   // scrolling up
-          upAcc += -dy; downAcc = 0;
-          if (upAcc > showHideThreshold) {
-            header.classList.remove('-translate-y-full');
-          }
-        }
+    function closeMenu() {
+      dialog.close();
+      openBtn.setAttribute('aria-expanded', 'false');
+      lockScroll(false); // 🔓 unfreeze page
+    }
+
+    closeBtn.addEventListener('click', closeMenu);
+
+    // Close when clicking outside the panel
+    dialog.addEventListener('click', (e) => {
+      const panel = dialog.querySelector('div.fixed.inset-y-0.right-0');
+      if (panel && !panel.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    dialog.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      closeMenu();
+    });
+  })();
+</script>
+<script is:inline>
+  (function () {
+    try {
+      const saved = localStorage.getItem("theme");
+      const root = document.documentElement;
+      if (saved === "dark") root.classList.add("dark");
+      else if (saved === "light") root.classList.remove("dark");
+    } catch {}
+
+    const root = document.documentElement;
+
+    function setTheme(dark) {
+      root.classList.toggle("dark", dark);
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+    }
+
+    function handleClick(e) {
+      const btn = e.target.closest("[data-theme-toggle]");
+      if (!btn) return;
+      const willBeDark = !root.classList.contains("dark");
+      setTheme(willBeDark);
+    }
+
+    document.addEventListener("click", handleClick);
+  })();
+</script>
+<script is:inline>
+  (function () {
+    const header = document.querySelector('[data-nav]');
+    if (!header) return;
+
+    let lastY = window.scrollY;
+    let lastTickY = lastY;
+    let ticking = false;
+    let dir = 0; // +1 down, -1 up
+    let locked = false; // pause while drawer/body is locked
+
+    const SHOW_HIDE_THRESHOLD = 16;  // px of movement before toggling
+    const STICKY_TOP_GRACE = 64;     // keep visible near the very top
+
+    function update(y) {
+      const dy = y - lastTickY;
+      lastTickY = y;
+
+      // Always show near top
+      if (y <= STICKY_TOP_GRACE) {
+        header.classList.remove('-translate-y-full');
+        dir = 0;
+        return;
       }
 
-      // Passive scroll listener for perf
-      window.addEventListener('scroll', onScroll, { passive: true });
+      if (dy > 0) {
+        // scrolling down
+        if (dir >= 0) dir += dy; else dir = dy;
+        if (dir > SHOW_HIDE_THRESHOLD) header.classList.add('-translate-y-full');
+      } else if (dy < 0) {
+        // scrolling up
+        const up = -dy;
+        if (dir <= 0) dir -= up; else dir = -up;
+        if (-dir > SHOW_HIDE_THRESHOLD) header.classList.remove('-translate-y-full');
+      }
+    }
 
-      // Pause auto-hide while the mobile drawer is open
-      const dlg = document.getElementById('mobile-menu');
-      if (dlg) {
-        const mo = new MutationObserver(() => {
-          locked = dlg.hasAttribute('open');
-          // reset the baseline so we don’t immediately hide/show on close
-          if (!locked) lastY = window.scrollY;
-          // ensure header visible when opening
-          if (locked) header.classList.remove('-translate-y-full');
+    function onScroll() {
+      if (locked) return;
+      lastY = window.scrollY;
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          update(lastY);
+          ticking = false;
         });
-        mo.observe(dlg, { attributes: true, attributeFilter: ['open'] });
       }
-    })();
-  </script>
+    }
+
+    // Passive for perf
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Reset baseline on unlock / resize / orientation change
+    function resetBaseline() {
+      lastY = window.scrollY;
+      lastTickY = lastY;
+    }
+    window.addEventListener('resize', resetBaseline, { passive: true });
+    window.addEventListener('orientationchange', resetBaseline, { passive: true });
+
+    // Detect drawer open/close (pause while open)
+    const dlg = document.getElementById('mobile-menu');
+    if (dlg) {
+      const mo = new MutationObserver(() => {
+        const isOpen = dlg.hasAttribute('open');
+        locked = isOpen || document.body.style.position === 'fixed';
+        if (isOpen) {
+          // Ensure header is visible when the drawer opens
+          header.classList.remove('-translate-y-full');
+        } else {
+          // Re-baseline when it closes
+          resetBaseline();
+        }
+      });
+      mo.observe(dlg, { attributes: true, attributeFilter: ['open'] });
+    }
+
+    // Also react if body is frozen/unfrozen by other code
+    const bodyMo = new MutationObserver(() => {
+      const fixed = getComputedStyle(document.body).position === 'fixed';
+      locked = fixed;
+      if (!fixed) resetBaseline();
+    });
+    bodyMo.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+  })();
+</script>
 </header>
