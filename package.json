@@ -13,5 +13,8 @@
     "astro": "^5.13.5",
     "markdown-it": "^14.1.0",
     "tailwindcss": "^4.1.12"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^4.3.5"
   }
 }
