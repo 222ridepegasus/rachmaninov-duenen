@@ -12,7 +12,7 @@ const currentPath = Astro.url.pathname;
 
 
 <header class="w-full bg-white dark:bg-kk-black">
-  <nav aria-label="Global" class="mx-auto flex max-w-[1920px] items-center justify-between p-5 pl-4 pr-3 sm:px-12">
+  <nav aria-label="Global" class="mx-auto flex max-w-[1920px] items-center justify-between p-5 pl-4 pr-4 sm:px-12">
     <a href="/" class="-m-1.5 p-1.5">
       <span class="sr-only">Kieran Kelly</span>
       <img src="/kk.svg" alt="" class="w-30 sm:w-36 h-auto" />
@@ -49,7 +49,7 @@ const currentPath = Astro.url.pathname;
         aria-expanded="false"
       >
         <span class="sr-only">Open main menu</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-8 h-8">
           <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
@@ -96,7 +96,7 @@ const currentPath = Astro.url.pathname;
   <dialog id="mobile-menu" class="backdrop:bg-transparent sm:hidden">
     <div tabindex="0" class="fixed inset-0 focus:outline-none">
       <!-- Panel (replacing <el-dialog-panel>) -->
-      <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-5 pl-4 pr-3 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+      <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-5 pl-4 pr-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
         <div class="flex items-center justify-between">
           <a href="/" class="-m-1.5 p-1.5">
             <span class="sr-only">Kieran Kelly</span>
@@ -122,7 +122,7 @@ const currentPath = Astro.url.pathname;
             </button>
             <button type="button" id="close-mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400">
               <span class="sr-only">Close menu</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-6 h-6">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="w-8 h-8">
                 <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
