@@ -19,17 +19,24 @@ const fmt = (d: Date | string) =>
   });
 ---
 <BaseLayout title={post.data.title} description={post.data.excerpt}>
-  <article class="mx-auto max-w-[760px] px-5 sm:px-8 py-10">
-    {post.data.cover && (
+  <article class="mdx-content mx-auto max-w-[720px] px-4 sm:px-0 py-6 sm:py-12 mt-4">
+    <!-- {post.data.cover && (
       <img
         src={post.data.cover as string}
         alt={post.data.coverAlt ?? ""}
-        class="block w-full h-auto rounded-lg mb-8"
+        class="block w-full h-auto rounded-none mb-8"
       />
-    )}
-    <h1 class="text-4xl font-extrabold">{post.data.title}</h1>
-    <p class="mt-2 text-sm text-gray-500">{fmt(post.data.date)}</p>
-    <div class="prose dark:prose-invert mt-8">
+    )} -->
+
+    <h1 class="text-4xl sm:text-5xl font-extrabold">{post.data.title}</h1>
+    <p class="post-meta mt-2 py-4 text-sm text-gray-500">
+      {fmt(post.data.date)}
+    </p>
+
+    
+
+    <!-- MDX body -->
+    <div class="mdx-content mt-8">
       <Content />
     </div>
   </article>
