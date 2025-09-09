@@ -1,4 +1,4 @@
-import { z, defineCollection, image } from "astro:content";
+import { defineCollection, z, image } from "astro:content";
 
 const portfolio = defineCollection({
   type: "content",
@@ -6,7 +6,6 @@ const portfolio = defineCollection({
     title: z.string(),
     client: z.string(),
 
-    // Keep cover required per your current setup
     cover: z.string(),
     caseCover: z.string().optional(),
 
@@ -17,15 +16,12 @@ const portfolio = defineCollection({
 
     sortOrder: z.number().optional(),
 
-    // Optional helpers used in your slug mapping
     assetsBase: z.string().optional(),
     coverFile: z.string().optional(),
     caseCoverFile: z.string().optional(),
 
-    // New: ordered, modular blocks driven from frontmatter (permissive)
     blocks: z.array(z.any()).optional(),
 
-    // Legacy gallery still supported as a fallback
     gallery: z
       .array(
         z.object({
@@ -39,4 +35,17 @@ const portfolio = defineCollection({
   }),
 });
 
-export const collections = { portfolio };
+const blog = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    date: z.string().transform((d) => new Date(d)),
+    cover: z.string().optional(),
+    coverAlt: z.string().optional(),
+    excerpt: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { portfolio, blog };

@@ -1,11 +1,16 @@
 @import "tailwindcss";
+
+/* === Tailwind base imports & theme setup === */
 @theme {
   --color-kk-pink: #CF2C67 !important;
   --color-kk-black: #0D1915;
   --font-sans: "SF Pro Display Bold", "SF Pro Display", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
                "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: Georgia, "Times New Roman", Times, serif;
 }
+
+/* === Dark mode + root settings === */
 
 /* Enable dark mode via `.dark` class in Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -13,7 +18,7 @@
 /* Let native UI respect theme */
 :root { color-scheme: light dark; }
 
-/* --- Containers & full-bleed helpers --- */
+/* === Containers & layout utilities === */
 
 /* Standard site container: 1920px cap, 48px side padding */
 @utility container-site {
@@ -38,4 +43,106 @@
   width: 100vw;
   margin-left: 50%;
   transform: translateX(-50%);
+}
+
+/* === Prose / Markdown defaults === */
+
+.prose img {
+  @apply rounded-none;
+}
+
+/* === Blog article body (.mdx-content) === */
+.mdx-content {
+  @apply mx-auto text-[17px] leading-relaxed text-gray-800 dark:text-gray-100;
+  -webkit-font-smoothing: antialiased; /* Safari/Chrome on macOS */
+  -moz-osx-font-smoothing: grayscale;  /* Firefox on macOS */
+  text-rendering: optimizeLegibility;  /* enable kerning/ligatures where possible */
+  font-feature-settings: "kern","liga";
+}
+
+/* Paragraphs (Casper-like) — exclude meta line */
+.mdx-content p:not(.post-meta) {
+  @apply text-pretty text-[20px] leading-relaxed text-gray-800 dark:text-gray-300;
+  font-family: var(--font-serif);
+}
+
+/* Global vertical rhythm inside article body (Casper-like) */
+.mdx-content > * + * {
+  margin-block-start: clamp(28px, 4vmin, 56px);
+}
+
+/* Links, emphasis, quotes, dividers */
+.mdx-content a { @apply underline decoration-gray-300 hover:decoration-kk-pink underline-offset-2; }
+.mdx-content strong { @apply font-semibold; }
+.mdx-content em { @apply italic; }
+
+.mdx-content blockquote {
+  /* --- Blockquotes (Casper-like) --- */
+  @apply border-l-4 border-gray-800 dark:border-gray-700 pl-6 italic text-gray-700 dark:text-gray-300;
+  font-size: 20px;   /* slightly larger than body */
+  line-height: 1.8;  /* airy lines like Casper */
+  margin-bottom: clamp(28px, 4vmin, 56px);
+}
+/* Remove default margins from paragraph inside quotes */
+.mdx-content blockquote > p {
+  margin: 0;
+}
+.mdx-content hr {
+  margin-block: clamp(32px, 4vmin, 64px);
+  @apply border-t border-gray-200 dark:border-gray-800;
+}
+
+/* Figures + captions */
+.mdx-content figure { margin: 0; }
+.mdx-content figure img { @apply w-full h-auto rounded-none; }
+.mdx-content figure figcaption { @apply mt-2 text-sm text-gray-500 dark:text-gray-400 text-center; }
+
+/* Rhythm after headings/quotes */
+.mdx-content h2 + p { @apply mt-4; }
+.mdx-content blockquote + p { @apply mt-6; }
+
+/* Headings inside blog/article body */
+.mdx-content h2 { @apply text-3xl sm:text-4xl font-bold mb-4; }
+.mdx-content h3 { @apply text-2xl font-semibold mb-3; }
+
+/* === Blog article meta (dates etc.) === */
+.post-meta,
+.mdx-content .post-meta {
+  @apply text-sm text-gray-500 dark:text-gray-400 tracking-normal;
+  font-family: var(--font-sans); /* force back to sans-serif */
+  margin: 0; /* override default margins */
+}
+/* If meta is the first thing inside .mdx-content, keep gap to next block small */
+.mdx-content > .post-meta + * {
+  margin-block-start: 16px !important; /* override the global clamp for meta */
+}
+
+/* === Figure utilities for MDX === */
+
+@layer components {
+  /* Base figure (in-column) */
+  .figure {
+    @apply my-8;
+  }
+  .figure > img {
+    @apply w-full h-auto rounded-none;
+  }
+  .figure > figcaption {
+    @apply mt-2 text-sm text-gray-500 dark:text-gray-400 text-center;
+  }
+
+  /* Wider than text column, centered within page */
+  .figure-wide {
+    @apply relative left-1/2 -translate-x-1/2 w-[min(1200px,100vw-2rem)];
+  }
+
+  /* Full-bleed, edge-to-edge */
+  .figure-bleed {
+    @apply w-screen relative left-1/2 -translate-x-1/2;
+  }
+  .figure-bleed > img {
+    @apply w-screen max-w-none h-auto;
+  }
+
+
 }
