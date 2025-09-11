@@ -1,0 +1,112 @@
+---
+const { id = "case-tabs", tabs = [] } = Astro.props;
+---
+
+<!-- No width constraints on the root -->
+<div id={id} class="w-full">
+  <div class="mx-auto sm:container-site sm:mx-16 pt-4 md:pt-6">
+    <div class="h-px w-full bg-gray-200 dark:bg-gray-800 mb-6"></div>
+    <!-- BOOST z-index and add spacing under the bar -->
+    <div class="mx-auto relative z-[9999] mb-16 isolate flex justify-center">
+      <div
+        role="tablist"
+        aria-label="Case study views"
+        class="inline-flex rounded-full border border-gray-300 dark:border-gray-700 p-1"
+      >
+        {tabs.map((t, i) => (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            aria-controls={`${id}-${t.id}`}
+            id={`${id}-tab-${t.id}`}
+            class="px-5 py-2 text-lg font-medium rounded-full outline-none transition cursor-pointer pointer-events-auto select-none relative z-[10000]
+            text-gray-700 dark:text-gray-300
+            aria-selected:bg-gray-900 aria-selected:text-white
+            dark:aria-selected:bg-white dark:aria-selected:text-gray-900
+            hover:bg-gray-900/5 dark:hover:bg-white/10
+            focus-visible:ring focus-visible:ring-2 focus-visible:ring-gray-900/20 dark:focus-visible:ring-white/30"
+            data-tab={t.id}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- leave panels unconstrained -->
+  <slot />
+</div>
+
+<script is:inline>
+;(function () {
+  // Grab THIS component's root reliably: the element right before this script tag
+  var scriptEl = document.currentScript;
+  var root = scriptEl ? scriptEl.previousElementSibling : null;
+  if (!root || !(root instanceof HTMLElement)) { return; }
+
+  var ROOT_ID = root.id; // use the actual DOM id
+
+  // Helper: querySelectorAll -> Array (no modern syntax to keep Safari happy)
+  function qsa(sel, ctx) {
+    return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
+  }
+
+  var tabButtons = qsa('[role="tab"]', root);
+  var panels = qsa('[role="tabpanel"]', root);
+  if (!tabButtons.length || !panels.length) { return; }
+
+  function activate(targetId) {
+    for (var i = 0; i < tabButtons.length; i++) {
+      var btn = tabButtons[i];
+      var on = btn.getAttribute('data-tab') === targetId;
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+    for (var j = 0; j < panels.length; j++) {
+      var p = panels[j];
+      p.hidden = (p.id !== ROOT_ID + '-' + targetId);
+    }
+    try { localStorage.setItem(ROOT_ID + ':active', targetId); } catch (e) {}
+  }
+
+  // Determine starting tab
+  var hash = (location.hash || '').slice(1);
+  var saved = null;
+  try { saved = localStorage.getItem(ROOT_ID + ':active'); } catch (e) {}
+  var first = tabButtons[0] ? tabButtons[0].getAttribute('data-tab') : null;
+
+  var start = (function () {
+    for (var i = 0; i < tabButtons.length; i++) {
+      if (tabButtons[i].getAttribute('data-tab') === hash) return hash;
+    }
+    return saved || first;
+  })();
+
+  if (start) { activate(start); }
+
+  // Event delegation within the root
+  root.addEventListener('click', function (e) {
+    var t = e.target;
+    var el = (t && t.closest) ? t.closest('[role="tab"]') : null;
+    if (!el) { return; }
+    e.preventDefault();
+    var target = el.getAttribute('data-tab');
+    if (target) {
+      activate(target);
+      try { history.replaceState(null, '', '#' + target); } catch (e2) {}
+    }
+  }, false);
+
+  // Hash deep-linking support
+  window.addEventListener('hashchange', function () {
+    var h = (location.hash || '').slice(1);
+    for (var i = 0; i < tabButtons.length; i++) {
+      if (tabButtons[i].getAttribute('data-tab') === h) {
+        activate(h);
+        break;
+      }
+    }
+  }, false);
+})();
+</script>

@@ -8,20 +8,16 @@ export interface ImageItem {
   src: ImgSrc;
   alt?: string;
   caption?: string;
-  /** Tailwind aspect class, for example "aspect-[21/9]" or "aspect-video" */
   ratio?: string;
+  layout?: 'full' | 'narrow';   // ← add this
 }
 
 export interface Props {
-  /** New multi image API */
   images?: ImageItem[];
-  /** Legacy single image API */
   src?: ImgSrc;
   alt?: string;
   caption?: string;
   ratio?: string;
-
-  /** Sizes for responsive images when using astro:assets */
   sizes?: string;
   loading?: 'lazy' | 'eager';
 }
@@ -36,46 +32,51 @@ const {
   loading = 'lazy',
 } = Astro.props;
 
-// Normalize to a list so we can render one or many
 const items: ImageItem[] = images.length
   ? images
   : (src ? [{ src, alt, caption, ratio }] : []);
 
-// Can we use <Image /> (optimized) or do we fall back to <img>?
 const isOptimizable = (s: ImgSrc) => typeof s === 'object' && s && 'src' in s;
 ---
-
 <section class="px-4 sm:container-site py-0 sm:py-8 space-y-3 sm:space-y-8">
-  {items.map((it) => (
-    <figure class="space-y-3">
-      <div class={it.ratio ? `relative ${it.ratio}` : ''}>
-        {isOptimizable(it.src) ? (
-          <Image
-            src={it.src as ImageMetadata}
-            alt={it.alt ?? ''}
-            sizes={sizes}
-            loading={loading}
-            class={it.ratio
-              ? "absolute inset-0 h-full w-full object-cover"
-              : "w-full h-auto object-cover"}
-          />
-        ) : (
-          <img
-            src={it.src as string}
-            alt={it.alt ?? ''}
-            loading={loading}
-            class={it.ratio
-              ? "absolute inset-0 h-full w-full object-cover"
-              : "w-full h-auto object-cover"}
-          />
-        )}
-      </div>
+  {items.map((it) => {
+    const wrapper = it.layout === 'narrow'
+      ? 'mx-auto w-full max-w-5xl'   // tweak to max-w-3xl or max-w-prose if you prefer
+      : 'w-full';
 
-      {it.caption && (
-        <figcaption class="text-sm text-gray-500 dark:text-gray-400">
-          {it.caption}
-        </figcaption>
-      )}
-    </figure>
-  ))}
+    return (
+      <figure class="space-y-3">
+        <div class={wrapper}>
+          <div class={it.ratio ? `relative ${it.ratio}` : ''}>
+            {isOptimizable(it.src) ? (
+              <Image
+                src={it.src as ImageMetadata}
+                alt={it.alt ?? ''}
+                sizes={sizes}
+                loading={loading}
+                class={it.ratio
+                  ? 'absolute inset-0 h-full w-full object-cover'
+                  : 'w-full h-auto object-cover'}
+              />
+            ) : (
+              <img
+                src={it.src as string}
+                alt={it.alt ?? ''}
+                loading={loading}
+                class={it.ratio
+                  ? 'absolute inset-0 h-full w-full object-cover'
+                  : 'w-full h-auto object-cover'}
+              />
+            )}
+          </div>
+        </div>
+
+        {it.caption && (
+          <figcaption class="text-sm text-gray-500 dark:text-gray-400">
+            {it.caption}
+          </figcaption>
+        )}
+      </figure>
+    );
+  })}
 </section>

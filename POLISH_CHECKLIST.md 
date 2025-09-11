@@ -1,0 +1,31 @@
+# Launch Polish Checklist
+
+## Performance
+- [ ] Lazy-load large case study images and use decoding="async"
+- [ ] Preload main fonts with <link rel="preload">
+- [ ] Audit with Lighthouse and fix issues
+
+## SEO
+- [ ] Install @astrojs/sitemap and add to astro.config.mjs
+- [ ] Add robots.txt
+- [ ] Add meta description to each page
+- [ ] Add Open Graph and Twitter card images for index and case studies
+
+## UX
+- [ ] Set favicon (ico, 32/192/512 png, apple-touch-icon)
+- [ ] Check mobile spacing on index and case pages
+- [ ] Ensure keyboard focus states on links and cards
+- [ ] Add 404 page
+
+## UI
+- [ ] Add micro transistions where approriate
+- [ ] Use custom fonts
+
+## Content
+- [ ] Final copy pass on all case studies
+- [ ] Add About page
+- [ ] Remove drafts or set draft: false
+
+## Deploy
+- [ ] Set Netlify domain and force HTTPS
+- [ ] Add sitemap to Search Console

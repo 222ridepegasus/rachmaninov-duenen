@@ -4,6 +4,9 @@ import CoverSection from "@components/case-study/CoverSection.astro";
 import IntroMeta from "@components/case-study/IntroMeta.astro";
 import ImageBlock from "@components/case-study/ImageBlock.astro";
 import TextSection from "@components/case-study/TextSection.astro";
+import Tabs from "@components/case-study/Tabs.astro";
+import TabPanel from "@components/case-study/TabPanel.astro";
+
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
@@ -31,7 +34,7 @@ const toSrc = (fileOrSrc: string | undefined) =>
 const coverUrl = post.data.coverFile ? toSrc(post.data.coverFile) : cover;
 const caseCoverUrl = post.data.caseCoverFile ? toSrc(post.data.caseCoverFile) : caseCover;
 
-// Map gallery items if present (legacy fallback)
+// Legacy gallery fallback (for non-tab pages)
 const galleryItems = (post.data.gallery ?? []).map((g: any) => ({
   src: g.src ?? toSrc(g.file),
   alt: g.alt,
@@ -39,7 +42,29 @@ const galleryItems = (post.data.gallery ?? []).map((g: any) => ({
   ratio: g.ratio ?? "aspect-video",
 }));
 
-// New: ordered, modular blocks from frontmatter
+// Tabs, if present
+const tabs = (post.data.tabs ?? null) as null | Array<{
+  id: string;
+  label: string;
+  blocks?: Array<
+    | { type: "cover"; image?: string; imageFile?: string; alt?: string }
+    | { type: "intro" }
+    | {
+        type: "image";
+        images: Array<{
+          src?: string;
+          file?: string;
+          alt?: string;
+          caption?: string;
+          ratio?: string;
+          layout?: "full" | "narrow";   // ← add this
+        }>;
+      }
+    | { type: "text"; index?: string; heading?: string; body?: string }
+  >;
+}>;
+
+// Non-tab blocks fallback (for pages like Starborne)
 type Block =
   | { type: "cover"; image?: string; imageFile?: string; title?: string; subtitle?: string; alt?: string }
   | { type: "intro" }
@@ -52,20 +77,19 @@ const blocks = rawBlocks.map((b) => {
     return {
       _component: "cover",
       image: b.image ?? (b.imageFile ? toSrc(b.imageFile) : undefined),
-      title: b.title,
-      subtitle: b.subtitle,
+      title: (b as any).title,
+      subtitle: (b as any).subtitle,
       alt: b.alt,
     };
   }
-  if (b.type === "intro") {
-    return { _component: "intro" };
-  }
+  if (b.type === "intro") return { _component: "intro" };
   if (b.type === "image") {
     const images = (b.images ?? []).map((it) => ({
       src: it.src ?? toSrc(it.file),
       alt: it.alt,
       caption: it.caption,
-      ratio: it.ratio ?? "aspect-video",
+      ratio: it.ratio,
+      layout: it.layout,   // ← keep this!
     }));
     return { _component: "image", images };
   }
@@ -75,39 +99,60 @@ const blocks = rawBlocks.map((b) => {
   return b as any;
 });
 ---
+
 <BaseLayout title={`${title} — Kieran Kelly`}>
   <main>
-    {blocks.length ? (
+    {/* Shared header always renders */}
+    <CoverSection image={caseCoverUrl ?? coverUrl} title={title} subtitle={caseSubtitle} alt="" />
+    <IntroMeta meta={metaItems} intro={post.data.intro} />
+
+    {/* If tabs exist, render them; else fallback to legacy blocks */}
+    {tabs ? (
       <>
-        {blocks.map((b) =>
-          b._component === "cover" ? (
-            <CoverSection
-              image={b.image ?? (caseCoverUrl ?? coverUrl)}
-              title={b.title ?? title}
-              subtitle={b.subtitle ?? caseSubtitle}
-              alt={b.alt ?? ""}
-            />
-          ) : b._component === "intro" ? (
-            <IntroMeta
-              meta={metaItems}
-              intro={post.data.intro}
-            />
-          ) : b._component === "image" ? (
-            <ImageBlock images={b.images} />
-          ) : b._component === "text" ? (
-            <TextSection index={b.index} heading={b.heading} body={b.body} />
-          ) : null
-        )}
+        <Tabs id={`${post.slug}-tabs`} tabs={tabs.map(t => ({ id: t.id, label: t.label }))}>
+          {tabs.map((t, i) => (
+            <TabPanel tabsId={`${post.slug}-tabs`} tabId={t.id} hidden={i !== 0}>
+              {(t.blocks ?? [])
+                .filter((b) => b?.type !== "cover" && b?.type !== "intro")
+                .map((b) =>
+                  b.type === "image" ? (
+                    <ImageBlock
+                      images={(b.images ?? []).map((it) => ({
+                        src: it.src ?? toSrc(it.file),
+                        alt: it.alt,
+                        caption: it.caption,
+                        ratio: it.ratio ?? "",                 // keep empty if you don’t want forced aspect
+                        layout: it.layout ?? (it as any).variant, // ← pass layout (fallback to `variant`)
+                      }))}
+                    />
+                  ) : b.type === "text" ? (
+                    <TextSection index={b.index} heading={b.heading} body={b.body} />
+                  ) : null
+                )}
+            </TabPanel>
+          ))}
+        </Tabs>
       </>
     ) : (
+      /* legacy fallback unchanged */
       <>
-        <!-- Fallback if no blocks -->
-        <CoverSection image={caseCoverUrl ?? coverUrl} title={title} subtitle={caseSubtitle} alt="" />
-        <IntroMeta
-          meta={metaItems}
-          intro={post.data.intro}
-        />
-        {galleryItems.length ? <ImageBlock images={galleryItems} /> : null}
+        {blocks.length ? (
+          <>
+            {blocks.map((b) =>
+              b._component === "cover" ? null :
+              b._component === "intro" ? null :
+              b._component === "image" ? (
+                <ImageBlock images={b.images} />
+              ) : b._component === "text" ? (
+                <TextSection index={b.index} heading={b.heading} body={b.body} />
+              ) : null
+            )}
+          </>
+        ) : (
+          <>
+            {galleryItems.length ? <ImageBlock images={galleryItems} /> : null}
+          </>
+        )}
       </>
     )}
   </main>

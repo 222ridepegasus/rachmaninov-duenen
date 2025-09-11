@@ -1,0 +1,13 @@
+---
+const { tabsId, tabId, class: className = "", hidden: initiallyHidden = false } = Astro.props;
+---
+<section
+  role="tabpanel"
+  tabindex="0"
+  id={`${tabsId}-${tabId}`}
+  aria-labelledby={`${tabsId}-tab-${tabId}`}
+  class={`mt-8 ${className}`}
+  hidden={initiallyHidden}
+>
+  <slot />
+</section>
