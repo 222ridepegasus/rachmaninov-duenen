@@ -120,7 +120,7 @@ tabs:
 
       - type: "image"
         images:
-          - file: cv_Web_Landing_01.webp
+          - file: cv_Web_Landing_02.webp
             alt: "Landing Page Small Desktop"
             caption: ""
             layout: "narrow"
@@ -130,15 +130,29 @@ tabs:
         index: "02"
         heading: "Dashboard"
         body: |
-          The Civitas home page was designed to carry through the look and feel of the game while adapting it for the web. It needed to be fully responsive and highlight the core gameplay pillars, even though the game was still in early development with limited supporting material. The visual language established here also flowed directly into the dashboard and logged-in experience, creating a consistent journey from first impression to ongoing engagement.
+          The dashboard is the central hub for logged-in players. From here, they connect their wallet, complete daily check-ins, and manage premium currencies such as Runes and Fragments. It displays the latest auction activity and provides quick access to key sections like Quests, Events, and Clan overviews, acting as the launch point for a player’s ongoing engagement with the game.
 
       - type: "image"
         images:
           - file: cv_Web_Dashboard_01.png
-            alt: "Dashboard"
+            alt: "Civitas Dashboard"
             caption: ""
             layout: "narrow"
-            ratio: ""  
+            ratio: ""
+            
+      - type: "text"
+        index: "03"
+        heading: "Auction"
+        body: |
+          The auction page gives players the opportunity to bid on The Chosen - utility-driven NFT characters that can be added to their village workforce for unique perks. Each card presents an overview of the character, while the pricing panel handles key states such as the current bid, the next increment required, and whether the player is the highest bidder. This design keeps the bidding process clear and competitive, while reinforcing the value of these limited characters within the wider economy.
+
+      - type: "image"
+        images:
+          - file: cv_Web_Auction_01.webp
+            alt: "Civitas Dashboard"
+            caption: ""
+            layout: "narrow"
+            ratio: ""         
 
       
 
