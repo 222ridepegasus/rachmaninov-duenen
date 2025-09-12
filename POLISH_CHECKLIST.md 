@@ -25,6 +25,7 @@
 - [ ] Final copy pass on all case studies
 - [ ] Add About page
 - [ ] Remove drafts or set draft: false
+- [ ] Add Video to Civitas / TMA 
 
 ## Deploy
 - [ ] Set Netlify domain and force HTTPS

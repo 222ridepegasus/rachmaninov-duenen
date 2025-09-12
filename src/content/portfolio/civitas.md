@@ -144,7 +144,7 @@ tabs:
         index: "03"
         heading: "Auction"
         body: |
-          The auction page gives players the opportunity to bid on The Chosen - utility-driven NFT characters that can be added to their village workforce for unique perks. Each card presents an overview of the character, while the pricing panel handles key states such as the current bid, the next increment required, and whether the player is the highest bidder. This design keeps the bidding process clear and competitive, while reinforcing the value of these limited characters within the wider economy.
+          The auction page gives players the opportunity to bid on The Chosen, utility-driven NFT characters that can be added to their village workforce for unique perks. Each card presents an overview of the character, while the pricing panel handles key states such as the current bid, the next increment required, and whether the player is the highest bidder. This design keeps the bidding process clear and competitive, while reinforcing the value of these limited characters within the wider economy.
 
       - type: "image"
         images:
