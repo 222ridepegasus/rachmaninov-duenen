@@ -18,7 +18,12 @@ const fmt = (d: Date | string) =>
     year: "numeric", month: "long", day: "numeric",
   });
 ---
-<BaseLayout title={post.data.title} description={post.data.excerpt}>
+<BaseLayout 
+  title={post.data.title} 
+  description={post.data.description} 
+  slug={post.slug} 
+  ogImage={`/og/${post.slug}-preview.jpg`} 
+>
   <article class="mdx-content mx-auto max-w-[720px] px-4 sm:px-0 py-6 sm:py-12 mt-4">
     <!-- {post.data.cover && (
       <img
