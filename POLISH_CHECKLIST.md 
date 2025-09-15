@@ -4,6 +4,7 @@
 - [ ] Lazy-load large case study images and use decoding="async"
 - [ ] Preload main fonts with <link rel="preload">
 - [ ] Audit with Lighthouse and fix issues
+- [ ] Optimise all images as WebP
 
 ## SEO
 - [ ] Install @astrojs/sitemap and add to astro.config.mjs

@@ -1,0 +1,31 @@
+---
+// Props: images = array of src strings
+const { images = [] } = Astro.props;
+---
+
+{images.length > 0 && (
+  <div class="my-12 figure-wide">
+    <div
+      class={`grid gap-4 ${
+        images.length === 1
+          ? ''
+          : images.length === 2
+          ? 'md:grid-cols-2'
+          : images.length === 3
+          ? 'md:grid-cols-3'
+          : 'md:grid-cols-2'
+      }`}
+    >
+      {images.map((src, index) => (
+        <div class="w-full overflow-hidden rounded">
+          <img
+            src={src}
+            alt={`Gallery image ${index + 1}`}
+            class="w-full h-auto object-cover"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
