@@ -5,7 +5,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
   return posts.map((post) => ({
-    params: { slug: post.slug }, // single string
+    params: { slug: post.slug },
     props: { post },
   }));
 }
@@ -17,6 +17,15 @@ const fmt = (d: Date | string) =>
   (d instanceof Date ? d : new Date(d)).toLocaleDateString("en-GB", {
     year: "numeric", month: "long", day: "numeric",
   });
+
+// ✅ NEW: Get all posts and calculate previous/next
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
+const currentIndex = sortedPosts.findIndex((p) => p.slug === post.slug);
+const newerPost = sortedPosts[currentIndex - 1];
+const olderPost = sortedPosts[currentIndex + 1];
 ---
 <BaseLayout 
   title={post.data.title} 
@@ -25,24 +34,71 @@ const fmt = (d: Date | string) =>
   ogImage={`/og/${post.slug}-preview.jpg`}
 >
   <article class="mdx-content mx-auto max-w-[720px] px-4 sm:px-0 py-6 sm:py-12 mt-4">
-    <!-- {post.data.cover && (
-      <img
-        src={post.data.cover as string}
-        alt={post.data.coverAlt ?? ""}
-        class="block w-full h-auto rounded-none mb-8"
-      />
-    )} -->
-
     <h1 class="text-4xl sm:text-5xl font-extrabold">{post.data.title}</h1>
     <p class="post-meta mt-2 py-4 text-sm text-gray-500">
       {fmt(post.data.date)}
     </p>
 
-    
-
     <!-- MDX body -->
     <div class="mdx-content mt-8">
       <Content />
     </div>
+
+    <!-- ✅ Prev/Next Navigation -->
+    {(olderPost || newerPost) && (
+      <div
+        class={`mt-16 border-t border-gray-300 dark:border-gray-700 pt-8 grid gap-8 ${
+          olderPost && newerPost ? 'grid-cols-2' : 'grid-cols-1'
+        }`}
+      >
+
+        {newerPost && (
+          <a
+            style="text-decoration: none !important;"
+            href={`/blog/${newerPost.slug}`}
+            class={`group block text-left ${
+              !olderPost ? 'md:col-start-1' : ''
+            }`}
+          >
+            <div class="text-md text-gray-500 dark:text-gray-400 flex items-center justify-start gap-2">
+              <span class="text-lg">←</span>
+              Newer
+            </div>
+            <img
+              src={newerPost.data.cover ?? '/fallback.jpg'}
+              alt={newerPost.data.title}
+              class="w-[160px] h-[112px] object-cover mt-3"
+            />
+            <p class="!mt-2 !text-xl sm:!text-2xl !font-semibold !font-sans !leading-snug">
+              {newerPost.data.title}
+            </p>
+          </a>
+        )}
+
+        {olderPost && (
+          <a
+            style="text-decoration: none !important;"
+            href={`/blog/${olderPost.slug}`}
+            class={`group block text-right ${
+              !newerPost ? 'md:col-start-2 ml-auto' : ''
+            }`}
+          >
+            <div class="text-md text-gray-500 dark:text-gray-400 flex items-center justify-end gap-2">
+              Older
+              <span class="text-lg">→</span>
+            </div>
+            <img
+              src={olderPost.data.cover ?? '/fallback.jpg'}
+              alt={olderPost.data.title}
+              class="w-[160px] h-[112px] object-cover ml-auto mt-3"
+            />
+            <p class="!mt-2 !text-xl sm:!text-2xl !font-semibold !font-sans !leading-snug">
+              {olderPost.data.title}
+            </p>
+          </a>
+        )}
+
+      </div>
+    )}
   </article>
 </BaseLayout>
