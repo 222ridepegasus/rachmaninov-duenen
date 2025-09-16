@@ -4,22 +4,28 @@
 - [ ] Lazy-load large case study images and use decoding="async"
 - [ ] Preload main fonts with <link rel="preload">
 - [ ] Audit with Lighthouse and fix issues
-- [ ] Optimise all images as WebP
+- [ ] Optimise all images as WebP or MozJPG
 
 ## SEO
 - [ ] Install @astrojs/sitemap and add to astro.config.mjs
 - [ ] Add robots.txt
 - [ ] Add meta description to each page
-- [ ] Add Open Graph and Twitter card images for index and case studies
+- [x] Add meta description to blog post pages
+- [ ] Add canonical URLs
+- [x] Add OG images per blog post (`/og/${slug}-preview.jpg`)
+- [x] Add Open Graph and Twitter card images for index and case studies
+- [ ] RSS / JSON Feed
 
 ## UX
 - [ ] Set favicon (ico, 32/192/512 png, apple-touch-icon)
 - [ ] Check mobile spacing on index and case pages
 - [ ] Ensure keyboard focus states on links and cards
 - [ ] Add 404 page
+- [ ] Add tags or topic system to blog
+- [ ] Add custom 404 page or easter egg
 
 ## UI
-- [ ] Add micro transistions where approriate
+- [ ] Add micro transitions where approriate
 - [ ] Use custom fonts
 
 ## Content
@@ -29,5 +35,15 @@
 - [ ] Add Video to Civitas / TMA 
 
 ## Deploy
-- [ ] Set Netlify domain and force HTTPS
+- [x] Set Netlify domain and force HTTPS
 - [ ] Add sitemap to Search Console
+- [ ] Verify sitemap works in production
+- [ ] Check OG previews in WhatsApp, iMessage, Twitter
+
+
+## Future Ideas
+- [ ] Home page with featured case study and latest blog post
+- [ ] Simple blog post search or filter
+- [ ] RSS feed styling or “Follow” button
+- [ ] “Now” or “Uses” page
+- [ ] Experiments index (or tagged posts)
