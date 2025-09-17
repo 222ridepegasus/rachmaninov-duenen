@@ -47,7 +47,7 @@ const olderPost = sortedPosts[currentIndex + 1];
     <!-- ✅ Prev/Next Navigation -->
     {(olderPost || newerPost) && (
       <div
-        class={`mt-16 border-t border-gray-300 dark:border-gray-700 pt-8 grid gap-8 ${
+        class={`!mt-24 border-t border-gray-300 dark:border-gray-700 pt-8 grid gap-8 ${
           olderPost && newerPost ? 'grid-cols-2' : 'grid-cols-1'
         }`}
       >
