@@ -59,12 +59,17 @@ const currentPath = Astro.url.pathname;
     <div class="hidden sm:flex sm:gap-x-12">
       {
         nav.map((item) => {
-          const isActive = currentPath === item.href;
+          const isActive =
+            item.href === "/blog"
+              ? currentPath === "/blog" || currentPath.startsWith("/blog/")
+              : currentPath === item.href;
           const activeClass = isActive ? "text-kk-pink" : "";
           return (
             <a
               href={item.href}
-              class={`text-lg font-bold ${activeClass}`}
+              class={`text-lg font-bold ${
+                isActive ? "text-kk-pink" : "text-black dark:text-white"
+              }`}
             >
               {item.label}
             </a>
@@ -132,12 +137,17 @@ const currentPath = Astro.url.pathname;
         <div class="mt-32 py-6 flex justify-center items-center flex-col gap-5">
             {
               nav.map((item) => {
-                const isActive = currentPath === item.href;
+                const isActive =
+                  item.href === "/blog"
+                    ? currentPath === "/blog" || currentPath.startsWith("/blog/")
+                    : currentPath === item.href;
                 const activeClass = isActive ? "text-kk-pink" : "";
                 return (
                   <a
                     href={item.href}
-                    class={`text-2xl font-bold ${activeClass}`}
+                    class={`text-2xl font-bold ${
+                      isActive ? "text-kk-pink" : "text-black dark:text-white"
+                    }`}
                   >
                     {item.label}
                   </a>
