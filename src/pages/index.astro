@@ -3,6 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PortfolioCard from "@components/PortfolioCard.astro";
 import { getCollection } from "astro:content";
 
+const pageMeta = {
+  title: "Kieran Kelly – UX/UI Designer",
+  description: "Portfolio of game, web, and product UX/UI design work.",
+  ogImage: "/images/og-home.jpg"
+};
+
 // 1) load collection
 const all = await getCollection("portfolio");
 
@@ -14,28 +20,29 @@ const ordered = items
   .slice()
   .sort((a, b) => (a.data.sortOrder ?? 999) - (b.data.sortOrder ?? 999));
 ---
-<BaseLayout title="Home">
+
+<BaseLayout {...pageMeta}>
   <!-- Hero -->
   <section class="w-full pt-4 pb-8 sm:py-12">
     <div class="px-4 sm:container-site">
       <h1 class="text-2xl sm:text-3xl font-bold">Kieran Kelly</h1>
-      <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-400">UX/UI Designer</p>
+      <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-400">
+        UX/UI Designer
+      </p>
     </div>
   </section>
 
   <!-- Portfolio grid -->
   <main id="main" class="px-4 sm:container-site pb-6 sm:pb-24">
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-4 gap-y-8 sm:gap-y-12">
-    {ordered.map((item) => (
-      <PortfolioCard
-        href={`/portfolio/${item.slug}/`}
-        title={item.data.title}
-        cover={item.data.cover}
-        caseSubtitle={item.data.caseSubtitle ?? item.data.client}
-      />
-    ))}
-</section>
+      {ordered.map((item) => (
+        <PortfolioCard
+          href={`/portfolio/${item.slug}/`}
+          title={item.data.title}
+          cover={item.data.cover}
+          caseSubtitle={item.data.caseSubtitle ?? item.data.client}
+        />
+      ))}
+    </section>
   </main>
 </BaseLayout>
-
-
