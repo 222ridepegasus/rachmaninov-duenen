@@ -1,6 +1,6 @@
 ---
 title: "Aston Villa"
-sortOrder: 20
+sortOrder: 5
 client: "Urban Zoo / Aston Villa FC"
 assetsBase: /images/portfolio/astonvilla
 cover: /images/portfolio/cover_astonvilla.jpg
